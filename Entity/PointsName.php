@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -20,18 +21,21 @@ class PointsName
 
     /**
      * @ORM\Column(type="string", length=10)
+    * @Groups({"point:read","point:write"})
      */
-    private $lang_code;
+    private $langCode;
 
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Point", inversedBy="name")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"point:write"})
      */
     private $fk_point;
 
     /**
      * @ORM\Column(type="string", length=255)
+    * @Groups({"point:read","point:write"})
      */
     private $name;
 
@@ -42,12 +46,12 @@ class PointsName
 
     public function getLangCode(): ?string
     {
-        return $this->lang_code;
+        return $this->langCode;
     }
 
-    public function setLangCode(string $lang_code): self
+    public function setLangCode(string $langCode): self
     {
-        $this->lang_code = $lang_code;
+        $this->langCode = $langCode;
 
         return $this;
     }
