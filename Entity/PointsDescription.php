@@ -3,9 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ApiResource()
  * @ORM\Entity(repositoryClass="App\Repository\PointsDescriptionRepository")
@@ -19,24 +18,23 @@ class PointsDescription
      */
     private $id;
 
+    /**
+     * @ORM\Column(type="string", length=10)
+     * @Groups({"point_read","point_write"})
+     */
+    private $langCode;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"point_read","point_write"})
+     */
+    private $descriptionText;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Point", inversedBy="description")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"point:write"})
      */
-    private $fkPoint;
-
-    /** @ORM\Column(type="string") 
-    * @Groups({"point:read","point:write"})
-    */
-     private $langCode;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-    * @Groups({"point:read","point:write"})
-     */
-    private $description;
+    private $fk_point;
 
     public function getId()
     {
@@ -55,26 +53,26 @@ class PointsDescription
         return $this;
     }
 
-    public function getFkPoint(): ?Point
+    public function getDescriptionText(): ?string
     {
-        return $this->fkPoint;
+        return $this->descriptionText;
     }
 
-    public function setFkPoint(?Point $fkPoint): self
+    public function setDescriptionText(string $descriptionText): self
     {
-        $this->fkPoint = $fkPoint;
+        $this->descriptionText = $descriptionText;
 
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getFkPoint(): ?Point
     {
-        return $this->description;
+        return $this->fk_point;
     }
 
-    public function setDescription(string $description): self
+    public function setFkPoint(?Point $fk_point): self
     {
-        $this->description = $description;
+        $this->fk_point = $fk_point;
 
         return $this;
     }

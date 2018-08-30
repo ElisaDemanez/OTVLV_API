@@ -5,82 +5,67 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource(
- *     normalizationContext={"groups"={"point:read"}},
- *     denormalizationContext={"groups"={"point:write"}}
+  * @ApiResource(
+ *     normalizationContext={"groups"={"point_read"}},
+ *     denormalizationContext={"groups"={"point_write"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\PointRepository")
- * 
  */
-
-//  Cannot get to write name and description at the same time. 
-
 class Point
 {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"point_read"})
      */
     private $id;
 
-
-
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"point:read","point:write"})
-     */
-    private $coordinates;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"point:read","point:write"})
-     */
-    private $image_url;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"point:read","point:write"})
+    * @Groups({"point_read","point_write"})
      */
     private $type;
 
-
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Point", mappedBy="parent", cascade="persist")
-     * @Groups({"point:read"})
-
+     * @ORM\Column(type="float")
+     * @Groups({"point_read","point_write"})
      */
-    private $children;
+    private $latitude;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Point", inversedBy="children")
-     * @Groups({"point:read"})
+     * @ORM\Column(type="float")
+     * @Groups({"point_read","point_write"})
      */
-    private $parent;
+    private $longitude;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\PointsName", mappedBy="fk_point", orphanRemoval=true)
-     * @Groups({"point:read","point:write"})
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"point_read","point_write"})
+     */
+    private $image_url;
+
+        
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PointsName", mappedBy="fk_point", orphanRemoval=true,cascade={"persist"})
+    * @Groups({"point_read","point_write"})
      */
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\PointsDescription", mappedBy="fkPoint", orphanRemoval=true)
-     * @Groups({"point:read","point:write"})
-     * 
+     * @ORM\OneToMany(targetEntity="App\Entity\PointsDescription", mappedBy="fk_point", orphanRemoval=true,cascade={"persist"})
+    * @Groups({"point_read","point_write"})
      */
     private $description;
 
-   
     public function __construct()
     {
-        $this->children = new ArrayCollection();
         $this->name = new ArrayCollection();
-        $this->description = new ArrayCollection();
+         $this->description = new ArrayCollection();
     }
 
     public function getId()
@@ -88,73 +73,39 @@ class Point
         return $this->id;
     }
 
-    /**
-     * @return Collection|Point[]
-     */
-    public function getChildren(): Collection
+    public function getType(): ?string
     {
-        return $this->children;
+        return $this->type;
     }
 
-    public function addChild(Point $child): self
+    public function setType(string $type): self
     {
-        if (!$this->children->contains($child)) {
-            $this->children[] = $child;
-            $child->addParent($this);
-        }
+        $this->type = $type;
 
         return $this;
     }
 
-    public function removeChild(Point $child): self
+  
+    public function getLatitude(): ?float
     {
-        if ($this->children->contains($child)) {
-            $this->children->removeElement($child);
-            // set the owning side to null (unless already changed)
-            if ($child->getParent() === $this) {
-                $child->addParent(null);
-            }
-        }
+        return $this->latitude;
+    }
+
+    public function setLatitude(float $latitude): self
+    {
+        $this->latitude = $latitude;
 
         return $this;
     }
 
-    /**
-     * @return Collection|Point[]
-     */
-    public function getParent()
+    public function getLongitude(): ?float
     {
-        return $this->parent;
+        return $this->longitude;
     }
 
-    public function addParent(Point $parent): self
+    public function setLongitude(float $longitude): self
     {
-            $this->parent[] = $parent;
-
-        return $this;
-    }
-
-    // public function removeParent(Point $parent): self
-    // {
-    //     if ($this->parent->contains($parent)) {
-    //         $this->parent->removeElement($parent);
-    //         // set the owning side to null (unless already changed)
-    //         if ($parent->getParentId() === $this) {
-    //             $parent->setParentId(null);
-    //         }
-    //     }
-
-    //     return $this;
-    // }
-
-    public function getCoordinates(): ?string
-    {
-        return $this->coordinates;
-    }
-
-    public function setCoordinates(string $coordinates): self
-    {
-        $this->coordinates = $coordinates;
+        $this->longitude = $longitude;
 
         return $this;
     }
@@ -171,19 +122,9 @@ class Point
         return $this;
     }
 
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
 
-    public function setType(string $type): self
-    {
-        $this->type = $type;
 
-        return $this;
-    }
-
-    /**
+  /**
      * @return Collection|PointsName[]
      */
     public function getName(): Collection
@@ -195,25 +136,26 @@ class Point
     {
         if (!$this->name->contains($name)) {
             $this->name[] = $name;
-            $name->setName($this);
+            $name->setFkPoint($this);
+
         }
 
         return $this;
     }
 
-    // public function removeName(PointsName $name): self
-    // {
-    //     if ($this->name->contains($name)) {
-    //         $this->name->removeElement($name);
-    //         // set the owning side to null (unless already changed)
-    //         if ($name->getPlaceo() === $this) {
-    //             $name->setName(null);
-    //         }
-    //     }
+    public function removeName(PointsName $name): self
+    {
+        if ($this->name->contains($name)) {
+            $this->name->removeElement($name);
+            // set the owning side to null (unless already changed)
+            if ($name->getFkPoint() === $this) {
+                $name->setFkPoint(null);
+            }
+        }
 
-    //     return $this;
-    // }
-    
+        return $this;
+    }
+
 
     /**
      * @return Collection|PointsDescription[]
@@ -227,24 +169,22 @@ class Point
     {
         if (!$this->description->contains($description)) {
             $this->description[] = $description;
-            $description->setDescription($this);
+            $description->setFkPoint($this);
         }
 
         return $this;
     }
 
-    // public function removeDescription(PointsDescription $description): self
-    // {
-    //     if ($this->description->contains($description)) {
-    //         $this->description->removeElement($description);
-    //         // set the owning side to null (unless already changed)
-    //         if ($description->getDescription() === $this) {
-    //             $description->setDescription(null);
-    //         }
-    //     }
+    public function removeDescription(PointsDescription $description): self
+    {
+        if ($this->description->contains($description)) {
+            $this->description->removeElement($description);
+            // set the owning side to null (unless already changed)
+            if ($description->getFkPoint() === $this) {
+                $description->setFkPoint(null);
+            }
+        }
 
-    //     return $this;
-    // }
-
-
+        return $this;
+    }
 }
