@@ -251,7 +251,7 @@ class Point
 
     public function addParent(Point $parent): self
     {
-            $this->parent[] = $parent;
+            $this->parent = $parent;
 
         return $this;
     }
