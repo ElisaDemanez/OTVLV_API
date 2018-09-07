@@ -5,9 +5,13 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+
 /**
  * @ApiResource()
  * @ORM\Entity(repositoryClass="App\Repository\PointsNameRepository")
+
  */
 class PointsName
 {
@@ -27,7 +31,7 @@ class PointsName
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"point_read","point_write"})
+     * @Groups({"point_read","point_write","points_read_simple"})
      */
     private $nametext;
 

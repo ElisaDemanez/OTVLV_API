@@ -3,6 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Serializer\Filter\GroupFilter;
+
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,9 +14,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
   * @ApiResource(
- *     normalizationContext={"groups"={"point_read"}},
+ *     normalizationContext={"groups"={"point_read", "points_read_simple"}},
  *     denormalizationContext={"groups"={"point_write"}}
  * )
+ *  * @ApiFilter(SearchFilter::class, properties={"type": "exact"})
+
  * @ORM\Entity(repositoryClass="App\Repository\PointRepository")
  */
 class Point
@@ -27,7 +33,7 @@ class Point
 
     /**
      * @ORM\Column(type="string", length=255)
-    * @Groups({"point_read","point_write"})
+    * @Groups({"point_read","point_write","points_read_simple"})
      */
     private $type;
 
@@ -45,7 +51,7 @@ class Point
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"point_read","point_write"})
+     * @Groups({"point_read","point_write","points_read_simple"})
      */
     private $image_url;
 
@@ -62,10 +68,26 @@ class Point
      */
     private $description;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Point", mappedBy="parent", cascade="persist")
+     * @Groups({"point_read","point_write"})
+     */
+    private $children;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Point", inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     * @Groups({"point_read","point_write"})
+     */
+    private $parent;
+    // * @ApiProperty(readableLink=false, writableLink=false)
+
     public function __construct()
     {
         $this->name = new ArrayCollection();
          $this->description = new ArrayCollection();
+         $this->children = new ArrayCollection();
+         
     }
 
     public function getId()
@@ -121,7 +143,6 @@ class Point
 
         return $this;
     }
-
 
 
   /**
@@ -187,4 +208,66 @@ class Point
 
         return $this;
     }
+
+   
+    /**
+     * @return Collection|Point[]
+     */
+    public function getChildren(): Collection
+    {
+        return $this->children;
+    }
+
+    public function addChild(Point $child): self
+    {
+        if (!$this->children->contains($child)) {
+            $this->children[] = $child;
+            $child->addParent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChild(Point $child): self
+    {
+        if ($this->children->contains($child)) {
+            $this->children->removeElement($child);
+            // set the owning side to null (unless already changed)
+            if ($child->getParent() === $this) {
+                $child->addParent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Point[]
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    public function addParent(Point $parent): self
+    {
+            $this->parent[] = $parent;
+
+        return $this;
+    }
+
+    public function removeParent(Point $parent): self
+    {
+        if ($this->parent->contains($parent)) {
+            $this->parent->removeElement($parent);
+            // set the owning side to null (unless already changed)
+            if ($parent->getParentId() === $this) {
+                $parent->setParentId(null);
+            }
+        }
+
+        return $this;
+    }
+
+  
 }
