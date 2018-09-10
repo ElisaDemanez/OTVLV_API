@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Serializer\Filter\GroupFilter;
-
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -246,12 +244,12 @@ class Point
      */
     public function getParent()
     {
-        return $this->parent;
+             return $this->parent;
     }
 
-    public function addParent(Point $parent): self
+    public function addParent(Point $parent): ?self
     {
-            $this->parent = $parent;
+                   $this->parent = $parent;
 
         return $this;
     }
