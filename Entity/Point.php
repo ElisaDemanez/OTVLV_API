@@ -67,7 +67,7 @@ class Point
     private $description;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Point", mappedBy="parent", cascade="persist")
+     * @ORM\OneToMany(targetEntity="App\Entity\Point", mappedBy="parent", cascade={"persist"})
      * @Groups({"point_read","point_write"})
      */
     private $children;
@@ -78,8 +78,8 @@ class Point
      * @Groups({"point_read","point_write"})
      */
     private $parent;
-    // * @ApiProperty(readableLink=false, writableLink=false)
 
+    
     public function __construct()
     {
         $this->name = new ArrayCollection();

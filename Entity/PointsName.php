@@ -63,7 +63,7 @@ class PointsName
         return $this->nametext;
     }
 
-    public function setNametext(string $nametext): self
+    public function setNametext($nametext): ?self
     {
         $this->nametext = $nametext;
 

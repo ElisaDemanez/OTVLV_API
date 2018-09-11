@@ -58,7 +58,7 @@ class PointsDescription
         return $this->descriptionText;
     }
 
-    public function setDescriptionText(string $descriptionText): self
+    public function setDescriptionText( $descriptionText): ?self
     {
         $this->descriptionText = $descriptionText;
 
