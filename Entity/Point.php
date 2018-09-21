@@ -9,6 +9,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use  App\Exception\PointIsNotParent;
+use  App\Exception\PointIsNotChild;
+
 
 /**
   * @ApiResource(
@@ -218,9 +221,21 @@ class Point
 
     public function addChild(Point $child): self
     {
+        var_dump($this->type != "parent");
+        var_dump($child->type !="children");
         if (!$this->children->contains($child)) {
+            if(!$this->type != "parent") {
+                throw new PointIsNotParent(sprintf('The product  does not exist.'));
+            }
+            elseif(!$child->type !="children") {
+                throw new PointIsNotChild(sprintf('The product  does not exist.'));
+                
+            }
+            else {
             $this->children[] = $child;
             $child->addParent($this);
+            }
+    
         }
 
         return $this;
