@@ -30,7 +30,7 @@ class PointsName
     private $fk_point;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"point_read","point_write","points_read_simple"})
      */
     private $nametext;

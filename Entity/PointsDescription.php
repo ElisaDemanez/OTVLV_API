@@ -25,7 +25,7 @@ class PointsDescription
     private $langCode;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255,nullable=true)
      * @Groups({"point_read","point_write"})
      */
     private $descriptionText;
