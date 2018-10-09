@@ -221,17 +221,21 @@ class Point
 
     public function addChild(Point $child): self
     {
-        var_dump($this->type != "parent");
-        var_dump($child->type !="children");
+        var_dump( $child);
+        
+        print(!$this->children->contains($child));
+        
         if (!$this->children->contains($child)) {
-            if(!$this->type != "parent") {
-                throw new PointIsNotParent(sprintf('The product  does not exist.'));
+            print('ici');
+            if($this->type != "parent") {
+                throw new PointIsNotParent(sprintf('The point you\'re trying to add children to is not of type "parent" ' ));
             }
-            elseif(!$child->type !="children") {
-                throw new PointIsNotChild(sprintf('The product  does not exist.'));
+            elseif($child->type !="children") {
+                throw new PointIsNotChild(sprintf('The child point you\'re trying to add is not of type "children"'));
                 
             }
             else {
+               
             $this->children[] = $child;
             $child->addParent($this);
             }
@@ -247,7 +251,7 @@ class Point
             $this->children->removeElement($child);
             // set the owning side to null (unless already changed)
             if ($child->getParent() === $this) {
-                $child->addParent(null);
+                $child->removeParent($child->getParent());
             }
         }
 
@@ -259,27 +263,19 @@ class Point
      */
     public function getParent()
     {
-             return $this->parent;
+         return $this->parent;
     }
 
     public function addParent(Point $parent): ?self
     {
-                   $this->parent = $parent;
-
+        $this->parent = $parent;
         return $this;
     }
 
     public function removeParent(Point $parent): self
     {
-        if ($this->parent->contains($parent)) {
-            $this->parent->removeElement($parent);
-            // set the owning side to null (unless already changed)
-            if ($parent->getParentId() === $this) {
-                $parent->setParentId(null);
-            }
-        }
-
-        return $this;
+       $this->parent = null ;
+       return $this;
     }
 
   
