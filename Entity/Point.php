@@ -14,11 +14,11 @@ use  App\Exception\PointIsNotChild;
 
 
 /**
-  * @ApiResource(
+ * @ApiResource(
  *     normalizationContext={"groups"={"point_read", "points_read_simple"}},
  *     denormalizationContext={"groups"={"point_write"}}
  * )
- *  * @ApiFilter(SearchFilter::class, properties={"type": "exact"})
+ * @ApiFilter(SearchFilter::class, properties={"type": "exact"})
 
  * @ORM\Entity(repositoryClass="App\Repository\PointRepository")
  */
