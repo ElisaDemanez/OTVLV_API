@@ -221,27 +221,18 @@ class Point
 
     public function addChild(Point $child): self
     {
-        var_dump( $child);
-        
-        print(!$this->children->contains($child));
-        
         if (!$this->children->contains($child)) {
-            print('ici');
             if($this->type != "parent") {
-                throw new PointIsNotParent(sprintf('The point you\'re trying to add children to is not of type "parent" ' ));
+                throw new PointIsNotParent(sprintf('The point %u you\'re trying to add children to is not of type "parent"', $this->id ));
             }
             elseif($child->type !="children") {
-                throw new PointIsNotChild(sprintf('The child point you\'re trying to add is not of type "children"'));
-                
+                throw new PointIsNotChild(sprintf('The child point you\'re trying to add is not of type "children" but of type %u',$child->type ));
             }
             else {
-               
             $this->children[] = $child;
             $child->addParent($this);
             }
-    
         }
-
         return $this;
     }
 
